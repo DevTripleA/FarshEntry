@@ -1,0 +1,1 @@
+SELECT Id FROM Differences WHERE Difference LIKE '{0}%'

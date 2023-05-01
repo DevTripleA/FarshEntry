@@ -48,7 +48,13 @@ namespace FarshEntry.Forms
             var data = DatabaseManager.Fetch(ScriptsFilesNames.ReadersQuery);
             foreach (DataRow row in data.Rows)
             {
-                _readers.Add(new Reader { ReaderId = ConvertRowIdValueToInt("Id").Value, ParentId = ConvertRowIdValueToInt("ParentId"), ReaderName = ConvertRowValueToString("Name") });
+                var reader = new Reader
+                {
+                    ReaderId = ConvertRowIdValueToInt("Id").Value,
+                    ParentId = ConvertRowIdValueToInt("ParentId"),
+                    ReaderName = ConvertRowValueToString("Name")
+                };
+                _readers.Add(reader);
 
                 int? ConvertRowIdValueToInt(string fieldName)
                 {
@@ -178,7 +184,7 @@ namespace FarshEntry.Forms
 
         private void ReadersCheckBoxes_Click(object sender, EventArgs e)
         {
-            var senderCheckBox = sender as CheckBox;
+            var senderCheckBox = (CheckBox)sender;
 
             var readerCheckBox = _readersCheckBoxes.First(c => c.Control == sender);
 
@@ -244,6 +250,68 @@ namespace FarshEntry.Forms
                     _farsh.ReadersIds.Add(checkBox.Reader.ReaderId);
                     ReadersNamesTextBox.Text += checkBox.Reader.ReaderName;
                 }
+            }
+        }
+
+        private void WordTextBox_TextChanged(object sender, EventArgs e)
+        {
+            ConfigureAutoCompleteTextBoxes(sender, ScriptsFilesNames.WordsQuery);
+        }
+
+        private void DifferenceTextBox_TextChanged(object sender, EventArgs e)
+        {
+            ConfigureAutoCompleteTextBoxes(sender, ScriptsFilesNames.DifferencesQuery);
+        }
+
+        private void ConfigureAutoCompleteTextBoxes(object sender, string scriptFileName)
+        {
+            var textBox = (TextBox)sender;
+
+            var data = DatabaseManager.Fetch(scriptFileName, textBox.Text.Trim());
+            var suggestions = new AutoCompleteStringCollection();
+            foreach (DataRow row in data.Rows)
+            {
+                suggestions.Add(row[0].ToString());
+            }
+            textBox.AutoCompleteCustomSource = suggestions;
+            textBox.AutoCompleteMode = AutoCompleteMode.Suggest;
+            textBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
+        }
+
+        private void WordTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            GetSelectedFarshDetails(sender, e, ScriptsFilesNames.DifferenceIdQueryByWord);
+        }
+
+        private void DifferenceTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            GetSelectedFarshDetails(sender, e, ScriptsFilesNames.DifferenceIdQueryByDifference);
+        }
+
+        private void GetSelectedFarshDetails(object sender, KeyEventArgs e, string scriptFileName)
+        {
+            var textBox = (TextBox)sender;
+
+            if (e.KeyData == Keys.Enter)
+            {
+                var differenceIdData = DatabaseManager.Fetch(scriptFileName, textBox.Text);
+                if (differenceIdData.Rows.Count == 0)
+                {
+                    return;
+                }
+
+                var differenceId = differenceIdData.Rows[0][0].ToString();
+                var waysData = DatabaseManager.Fetch(ScriptsFilesNames.WaysQuery, differenceId);
+                foreach (DataRow way in waysData.Rows)
+                {
+                    var readerId = int.Parse(way[0].ToString());
+                    var readerCheckBox = _readersCheckBoxes.First(c => c.Reader.ReaderId == readerId);
+                    ReadersCheckBoxes_Click(readerCheckBox.Control, EventArgs.Empty);
+                }
+
+                var farshData = DatabaseManager.Fetch(ScriptsFilesNames.MinorFarshQuery, differenceId);
+                WordTextBox.Text = farshData.Rows[0]["Word"].ToString();
+                DifferenceTextBox.Text = farshData.Rows[0]["Difference"].ToString();
             }
         }
 

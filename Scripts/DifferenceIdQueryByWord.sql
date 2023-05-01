@@ -1,0 +1,1 @@
+SELECT d.Id FROM Differences AS d JOIN Positions AS p ON d.PositionId = p.Id WHERE p.Word LIKE '{0}%'

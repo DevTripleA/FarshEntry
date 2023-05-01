@@ -79,6 +79,8 @@
             WordTextBox.Name = "WordTextBox";
             WordTextBox.Size = new Size(150, 23);
             WordTextBox.TabIndex = 0;
+            WordTextBox.TextChanged += WordTextBox_TextChanged;
+            WordTextBox.KeyDown += WordTextBox_KeyDown;
             // 
             // WordLabel
             // 
@@ -95,6 +97,8 @@
             DifferenceTextBox.Name = "DifferenceTextBox";
             DifferenceTextBox.Size = new Size(409, 23);
             DifferenceTextBox.TabIndex = 1;
+            DifferenceTextBox.TextChanged += DifferenceTextBox_TextChanged;
+            DifferenceTextBox.KeyDown += DifferenceTextBox_KeyDown;
             // 
             // DifferenceLabel
             // 

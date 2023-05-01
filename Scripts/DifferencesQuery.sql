@@ -1,0 +1,1 @@
+SELECT Difference FROM Differences WHERE Difference LIKE '{0}%' ORDER BY Difference
