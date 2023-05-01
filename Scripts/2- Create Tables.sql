@@ -1,0 +1,45 @@
+USE TestQuranFarsh
+
+--CREATE TABLE Farsh(
+--	Id int NOT NULL,
+--	Word NVARCHAR(300),
+--	Diff NVARCHAR(500),
+--	Readers_Id NVARCHAR(100),
+--	Readers_Nm NVARCHAR(200),
+--	Soura_Id INT,
+--	Soura_Nm NVARCHAR(50),
+--	Aya INT,
+--	Page INT,
+--	CONSTRAINT PK_Farsh PRIMARY KEY(Id) 
+--)
+
+CREATE TABLE dbo.Readers (
+	Id INT NOT NULL PRIMARY KEY,
+	Name NVARCHAR(50) NOT NULL,
+	ParentId INT NULL FOREIGN KEY REFERENCES Readers(Id)
+)
+
+CREATE TABLE dbo.Chapters (
+	Id INT NOT NULL PRIMARY KEY,
+	Name NVARCHAR(50) NOT NULL,
+)
+
+CREATE TABLE dbo.Positions (
+	Id INT NOT NULL PRIMARY KEY,
+	Word NVARCHAR(300) NOT NULL,
+	ChapterId INT NOT NULL FOREIGN KEY REFERENCES Chapters(Id),
+	Verse INT NOT NULL,
+	Page INT NOT NULL,
+)
+
+CREATE TABLE dbo.Differences (
+	Id INT NOT NULL PRIMARY KEY,
+	Difference NVARCHAR(500) NOT NULL,
+	PositionId INT NOT NULL FOREIGN KEY REFERENCES Positions(Id),
+)
+
+CREATE TABLE dbo.Ways (
+	Id INT NOT NULL,
+	DifferenceId INT NOT NULL FOREIGN KEY REFERENCES Differences(Id),
+	ReaderId INT NOT NULL FOREIGN KEY REFERENCES Readers(Id)
+)

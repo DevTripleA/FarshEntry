@@ -1,0 +1,2 @@
+CREATE DATABASE TestQuranFarsh  
+COLLATE Arabic_CI_AI_KS_WS;
